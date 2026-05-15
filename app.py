@@ -3,7 +3,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 from src.auth import get_auth_url, get_spotify_client, handle_oauth_callback, logout
 from src.ai_client import get_playlist_from_vibe
