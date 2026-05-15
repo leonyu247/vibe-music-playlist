@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from src.auth import get_auth_url, get_spotify_client, handle_oauth_callback, logout
-from src.gemini_client import get_audio_features_from_vibe
+from src.ai_client import get_audio_features_from_vibe
 from src.spotify_client import create_and_save_playlist, get_recommendations
 
 st.set_page_config(page_title="Vibe Music Playlist", page_icon="🎵", layout="centered")

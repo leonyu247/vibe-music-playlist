@@ -1,7 +1,10 @@
 import json
 import os
 
-from google import genai
+from groq import Groq
+
+# NOTE: The Groq API key in use is a temporary key that expires 2026-08-13.
+# Renew it at console.groq.com before that date to avoid service interruption.
 
 _VALID_GENRES = (
     "acoustic, afrobeat, alt-rock, alternative, ambient, anime, black-metal, bluegrass, "
@@ -22,9 +25,7 @@ _VALID_GENRES = (
 
 _PROMPT_TEMPLATE = """You are a music curation expert. A user described a vibe: "{vibe}"
 
-Map this vibe to Spotify audio parameters and return ONLY a valid JSON object — no markdown, no explanation.
-
-Required fields:
+Map this vibe to Spotify audio parameters and return a JSON object with exactly these fields:
 - playlist_name: creative, short playlist name (max 40 characters)
 - description: one evocative sentence describing the vibe
 - seed_genres: array of 1–3 genre strings chosen ONLY from this list: {genres}
@@ -39,15 +40,11 @@ Required fields:
 
 
 def get_audio_features_from_vibe(vibe: str) -> dict:
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    client = Groq(api_key=os.environ["GROQ_API_KEY"])
     prompt = _PROMPT_TEMPLATE.format(vibe=vibe, genres=_VALID_GENRES)
-    response = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=prompt,
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
     )
-    text = response.text.strip()
-    # Strip markdown code fences if Gemini wraps the JSON
-    if text.startswith("```"):
-        lines = text.splitlines()
-        text = "\n".join(lines[1:-1] if lines[-1] == "```" else lines[1:])
-    return json.loads(text)
+    return json.loads(response.choices[0].message.content)
