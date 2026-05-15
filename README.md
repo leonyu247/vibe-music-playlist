@@ -44,7 +44,7 @@ pip install -r requirements.txt
 2. Go to **API Keys** → **Create API key**
 3. Copy the key
 
-> **Note:** Temporary Groq keys expire after 90 days. Renew at [console.groq.com](https://console.groq.com) before expiry to avoid service interruption. The current key expires **2026-08-13**.
+> **Note:** The API key in use is permanent and does not expire. If you generate your own key, check at [console.groq.com](https://console.groq.com) whether it has an expiry date.
 
 ### 3. Create a Spotify app
 

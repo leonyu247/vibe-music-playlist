@@ -3,8 +3,7 @@ import os
 
 from groq import Groq
 
-# NOTE: The Groq API key in use is a temporary key that expires 2026-08-13.
-# Renew it at console.groq.com before that date to avoid service interruption.
+# NOTE: The Groq API key in use is a permanent key with no expiry date.
 
 _PROMPT_TEMPLATE = """You are a music expert and playlist curator. A user described a vibe: "{vibe}"
 
