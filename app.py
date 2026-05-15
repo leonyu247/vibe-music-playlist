@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from src.auth import get_auth_url, get_spotify_client, handle_oauth_callback, logout
-from src.ai_client import get_audio_features_from_vibe
-from src.spotify_client import create_and_save_playlist, get_recommendations
+from src.ai_client import get_playlist_from_vibe
+from src.spotify_client import create_and_save_playlist, search_tracks
 
 st.set_page_config(page_title="Vibe Music Playlist", page_icon="🎵", layout="centered")
 
@@ -45,16 +45,16 @@ if st.button("Generate Playlist", type="primary", disabled=not vibe):
     for key in ("tracks", "playlist_name", "playlist_description"):
         st.session_state.pop(key, None)
 
-    with st.spinner("Interpreting your vibe with AI..."):
+    with st.spinner("Curating your playlist with AI..."):
         try:
-            features = get_audio_features_from_vibe(vibe)
+            playlist_data = get_playlist_from_vibe(vibe)
         except Exception as e:
             st.error(f"Could not interpret vibe: {e}")
             st.stop()
 
     with st.spinner("Finding tracks on Spotify..."):
         try:
-            tracks = get_recommendations(sp, features)
+            tracks = search_tracks(sp, playlist_data.get("tracks", []))
         except Exception as e:
             st.error(f"Spotify error: {e}")
             st.stop()
@@ -64,8 +64,8 @@ if st.button("Generate Playlist", type="primary", disabled=not vibe):
         st.stop()
 
     st.session_state["tracks"] = tracks
-    st.session_state["playlist_name"] = features.get("playlist_name", "Vibe Playlist")
-    st.session_state["playlist_description"] = features.get("description", "")
+    st.session_state["playlist_name"] = playlist_data.get("playlist_name", "Vibe Playlist")
+    st.session_state["playlist_description"] = playlist_data.get("description", "")
 
 # --- Track List ---
 if "tracks" in st.session_state:

@@ -1,27 +1,20 @@
 import spotipy
 
 
-def get_recommendations(sp: spotipy.Spotify, features: dict, limit: int = 20) -> list:
-    seed_genres = features.get("seed_genres", ["pop"])
-    # Spotify allows max 5 combined seeds; cap genres at 3
-    params = {
-        "seed_genres": seed_genres[:3],
-        "limit": limit,
-    }
-    for key in (
-        "target_energy",
-        "target_valence",
-        "target_danceability",
-        "target_acousticness",
-        "target_instrumentalness",
-        "target_tempo",
-        "target_popularity",
-    ):
-        if key in features:
-            params[key] = features[key]
-
-    result = sp.recommendations(**params)
-    return result.get("tracks", [])
+def search_tracks(sp: spotipy.Spotify, track_suggestions: list) -> list:
+    tracks = []
+    for suggestion in track_suggestions:
+        title = suggestion.get("title", "")
+        artist = suggestion.get("artist", "")
+        result = sp.search(
+            q=f"track:{title} artist:{artist}",
+            type="track",
+            limit=1,
+        )
+        items = result["tracks"]["items"]
+        if items:
+            tracks.append(items[0])
+    return tracks
 
 
 def create_and_save_playlist(
