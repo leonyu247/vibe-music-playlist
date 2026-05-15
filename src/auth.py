@@ -46,7 +46,7 @@ def get_spotify_client() -> spotipy.Spotify | None:
     if oauth.is_token_expired(token_info):
         token_info = oauth.refresh_access_token(token_info["refresh_token"])
         st.session_state["spotify_token"] = token_info
-    return spotipy.Spotify(auth=token_info["access_token"])
+    return spotipy.Spotify(auth=token_info["access_token"], requests_timeout=15)
 
 
 def get_auth_url() -> str:
@@ -58,3 +58,4 @@ def logout() -> None:
     st.session_state.pop("tracks", None)
     st.session_state.pop("playlist_name", None)
     st.session_state.pop("playlist_description", None)
+    st.session_state.pop("spotify_user", None)

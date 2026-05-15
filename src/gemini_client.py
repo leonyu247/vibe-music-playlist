@@ -1,7 +1,7 @@
 import json
 import os
 
-import google.generativeai as genai
+from google import genai
 
 _VALID_GENRES = (
     "acoustic, afrobeat, alt-rock, alternative, ambient, anime, black-metal, bluegrass, "
@@ -39,10 +39,12 @@ Required fields:
 
 
 def get_audio_features_from_vibe(vibe: str) -> dict:
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     prompt = _PROMPT_TEMPLATE.format(vibe=vibe, genres=_VALID_GENRES)
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt,
+    )
     text = response.text.strip()
     # Strip markdown code fences if Gemini wraps the JSON
     if text.startswith("```"):
