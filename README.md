@@ -10,7 +10,7 @@ Describe a mood or scene in plain English and get a Spotify playlist generated i
 ## How It Works
 
 1. You type a vibe description
-2. Google Gemini interprets it into Spotify audio parameters (energy, tempo, mood, etc.)
+2. Groq interprets it into Spotify audio parameters (energy, tempo, mood, etc.)
 3. Spotify's recommendations engine finds matching tracks
 4. You can save the playlist directly to your Spotify account
 
