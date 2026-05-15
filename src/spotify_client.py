@@ -23,12 +23,9 @@ def create_and_save_playlist(
     name: str,
     description: str,
 ) -> str:
-    user_id = sp.current_user()["id"]
-    playlist = sp.user_playlist_create(
-        user_id,
-        name,
-        public=True,
-        description=description[:300],
+    playlist = sp._post(
+        "me/playlists",
+        payload={"name": name, "public": True, "description": description[:300]},
     )
     track_uris = [t["uri"] for t in tracks]
     sp.playlist_add_items(playlist["id"], track_uris)
