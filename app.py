@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-import streamlit.components.v1 as components
-
 from src.auth import get_auth_url, get_spotify_client, handle_oauth_callback, logout
 from src.ai_client import get_playlist_from_vibe
 from src.spotify_client import create_and_save_playlist, search_tracks
@@ -21,18 +19,7 @@ if not sp:
     st.title("Vibe Music Playlist")
     st.write("Describe a mood or scene — get a Spotify playlist instantly.")
     st.info("Connect your Spotify account to get started.")
-    auth_url = get_auth_url()
-    components.html(
-        f"""
-        <a href="{auth_url}" target="_blank"
-           style="display:block;width:100%;padding:0.5rem 1rem;background-color:#1DB954;
-                  color:white;text-align:center;border-radius:0.375rem;
-                  text-decoration:none;font-weight:600;font-family:sans-serif;">
-            Connect to Spotify
-        </a>
-        """,
-        height=50,
-    )
+    st.link_button("Connect to Spotify", get_auth_url(), use_container_width=True, type="primary")
     st.stop()
 
 # --- Sidebar ---
