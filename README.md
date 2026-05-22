@@ -2,6 +2,8 @@
 
 Describe a mood or scene in plain English and get a Spotify playlist generated instantly using AI.
 
+**Live demo:** [vibe-music-playlist.onrender.com](https://vibe-music-playlist.onrender.com)
+
 **Example vibes:**
 - *"late night drive through a rainy city"*
 - *"Sunday morning coffee, soft and introspective"*
@@ -10,8 +12,8 @@ Describe a mood or scene in plain English and get a Spotify playlist generated i
 ## How It Works
 
 1. You type a vibe description
-2. Google Gemini interprets it into Spotify audio parameters (energy, tempo, mood, etc.)
-3. Spotify's recommendations engine finds matching tracks
+2. Groq (Llama 3.3 70B) suggests 20 songs that match the mood
+3. Spotify search finds each track
 4. You can save the playlist directly to your Spotify account
 
 ## Tech Stack
@@ -81,4 +83,4 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 - API keys are loaded from `.env` at runtime and never committed to git (`.gitignore` excludes `.env`)
 - Spotify access tokens are stored only in Streamlit's in-memory session state — not written to any database
 - The app requests the minimum required Spotify scopes: `playlist-modify-public` and `playlist-modify-private`
-- Only your typed vibe text is sent to Gemini — no Spotify account data or listening history
+- Only your typed vibe text is sent to Groq — no Spotify account data or listening history
