@@ -24,7 +24,7 @@ if not sp:
     auth_url = get_auth_url()
     components.html(
         f"""
-        <a href="{auth_url}" target="_top"
+        <a href="{auth_url}" target="_blank"
            style="display:block;width:100%;padding:0.5rem 1rem;background-color:#1DB954;
                   color:white;text-align:center;border-radius:0.375rem;
                   text-decoration:none;font-weight:600;font-family:sans-serif;">
