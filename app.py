@@ -35,12 +35,15 @@ with st.sidebar:
 st.title("Vibe Music Playlist")
 st.caption("Describe a mood or scene — get a Spotify playlist instantly.")
 
-vibe = st.text_input(
+vibe = st.text_area(
     "What's your vibe?",
     placeholder="e.g. late night drive through a rainy city",
+    max_chars=200,
+    height=80,
 )
+st.caption(f"{len(vibe)}/200 characters")
 
-if st.button("Generate Playlist", type="primary", disabled=not vibe):
+if st.button("Generate Playlist", type="primary", disabled=not vibe.strip()):
     # Clear previous results when generating a new playlist
     for key in ("tracks", "playlist_name", "playlist_description"):
         st.session_state.pop(key, None)
@@ -48,6 +51,12 @@ if st.button("Generate Playlist", type="primary", disabled=not vibe):
     with st.spinner("Curating your playlist with AI..."):
         try:
             playlist_data = get_playlist_from_vibe(vibe)
+        except ValueError as e:
+            st.error(str(e))
+            st.stop()
+        except TimeoutError as e:
+            st.error(str(e))
+            st.stop()
         except Exception as e:
             st.error(f"Could not interpret vibe: {e}")
             st.stop()
