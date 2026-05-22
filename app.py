@@ -19,7 +19,13 @@ if not sp:
     st.title("Vibe Music Playlist")
     st.write("Describe a mood or scene — get a Spotify playlist instantly.")
     st.info("Connect your Spotify account to get started.")
-    st.link_button("Connect to Spotify", get_auth_url(), use_container_width=True)
+    auth_url = get_auth_url()
+    st.markdown(
+        f'<a href="{auth_url}" target="_self" style="display:block;width:100%;padding:0.5rem 1rem;'
+        f'background-color:#1DB954;color:white;text-align:center;border-radius:0.375rem;'
+        f'text-decoration:none;font-weight:600;">Connect to Spotify</a>',
+        unsafe_allow_html=True,
+    )
     st.stop()
 
 # --- Sidebar ---
