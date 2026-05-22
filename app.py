@@ -22,15 +22,14 @@ if not sp:
     st.write("Describe a mood or scene — get a Spotify playlist instantly.")
     st.info("Connect your Spotify account to get started.")
     auth_url = get_auth_url()
-    st.code(auth_url, language=None)
     components.html(
         f"""
-        <button onclick="window.parent.location.href = '{auth_url}';"
-            style="width:100%;padding:0.5rem 1rem;background-color:#1DB954;color:white;
-                   border:none;border-radius:0.375rem;font-weight:600;font-size:1rem;
-                   cursor:pointer;font-family:sans-serif;">
+        <a href="{auth_url}" target="_top"
+           style="display:block;width:100%;padding:0.5rem 1rem;background-color:#1DB954;
+                  color:white;text-align:center;border-radius:0.375rem;
+                  text-decoration:none;font-weight:600;font-family:sans-serif;">
             Connect to Spotify
-        </button>
+        </a>
         """,
         height=50,
     )
