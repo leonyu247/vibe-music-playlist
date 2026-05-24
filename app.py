@@ -35,29 +35,51 @@ with st.sidebar:
 st.title("Vibe Music Playlist")
 st.caption("Describe a mood or scene — get a Spotify playlist instantly.")
 
-vibe = st.text_input(
+vibe = st.text_area(
     "What's your vibe?",
     placeholder="e.g. late night drive through a rainy city",
+    max_chars=200,
+    height=80,
 )
+st.caption(f"{len(vibe)}/200 characters")
 
-if st.button("Generate Playlist", type="primary", disabled=not vibe):
-    # Clear previous results when generating a new playlist
+generating = st.session_state.get("generating", False)
+
+if st.button("Generate Playlist", type="primary", disabled=not vibe.strip() or generating):
+    st.session_state["generating"] = True
+    st.session_state["pending_vibe"] = vibe
     for key in ("tracks", "playlist_name", "playlist_description"):
         st.session_state.pop(key, None)
+    st.rerun()
 
+if st.session_state.get("generating"):
+    pending_vibe = st.session_state.get("pending_vibe", vibe)
+
+    vibe_error = None
     with st.spinner("Curating your playlist with AI..."):
         try:
-            playlist_data = get_playlist_from_vibe(vibe)
+            playlist_data = get_playlist_from_vibe(pending_vibe)
+        except (ValueError, TimeoutError) as e:
+            vibe_error = str(e)
         except Exception as e:
-            st.error(f"Could not interpret vibe: {e}")
-            st.stop()
+            vibe_error = f"Could not interpret vibe: {e}"
 
+    st.session_state["generating"] = False
+
+    if vibe_error:
+        st.error(vibe_error)
+        st.stop()
+
+    spotify_error = None
     with st.spinner("Finding tracks on Spotify..."):
         try:
             tracks = search_tracks(sp, playlist_data.get("tracks", []))
         except Exception as e:
-            st.error(f"Spotify error: {e}")
-            st.stop()
+            spotify_error = f"Spotify error: {e}"
+
+    if spotify_error:
+        st.error(spotify_error)
+        st.stop()
 
     if not tracks:
         st.warning("No tracks found for this vibe. Try rephrasing it.")
