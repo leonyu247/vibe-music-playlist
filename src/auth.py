@@ -45,7 +45,12 @@ def handle_oauth_callback() -> None:
     code = st.query_params.get("code")
     if code and "spotify_token" not in st.session_state:
         oauth = _get_oauth()
-        token_info = oauth.get_access_token(code, as_dict=True, check_cache=False)
+        try:
+            token_info = oauth.get_access_token(code, as_dict=True, check_cache=False)
+        except Exception:
+            st.query_params.clear()
+            st.error("Spotify login failed. The link may have expired — please try connecting again.")
+            st.stop()
         if token_info:
             st.session_state["spotify_token"] = token_info
             st.session_state["login_time"] = time.time()
@@ -66,8 +71,12 @@ def get_spotify_client() -> spotipy.Spotify | None:
 
     oauth = _get_oauth()
     if oauth.is_token_expired(token_info):
-        token_info = oauth.refresh_access_token(token_info["refresh_token"])
-        st.session_state["spotify_token"] = token_info
+        try:
+            token_info = oauth.refresh_access_token(token_info["refresh_token"])
+            st.session_state["spotify_token"] = token_info
+        except Exception:
+            _clear_session()
+            return None
     return spotipy.Spotify(auth=token_info["access_token"], requests_timeout=15)
 
 

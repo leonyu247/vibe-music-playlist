@@ -25,7 +25,11 @@ if not sp:
 # --- Sidebar ---
 with st.sidebar:
     if "spotify_user" not in st.session_state:
-        st.session_state["spotify_user"] = sp.current_user()
+        try:
+            st.session_state["spotify_user"] = sp.current_user()
+        except Exception:
+            logout()
+            st.rerun()
     st.write(f"Logged in as **{st.session_state['spotify_user']['display_name']}**")
     if st.button("Logout"):
         logout()
