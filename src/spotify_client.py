@@ -23,6 +23,13 @@ def create_and_save_playlist(
     name: str,
     description: str,
 ) -> str:
+    page = sp.current_user_playlists(limit=50)
+    while page:
+        for playlist in page["items"]:
+            if playlist["name"].strip().lower() == name.strip().lower():
+                raise ValueError(f'You already have a playlist named "{name}". Rename it in Spotify or choose a different vibe.')
+        page = sp.next(page) if page["next"] else None
+
     playlist = sp._post(
         "me/playlists",
         payload={"name": name, "public": True, "description": description[:300]},

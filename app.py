@@ -115,16 +115,18 @@ if "tracks" in st.session_state:
     st.divider()
 
     if st.button("Save to Spotify", type="primary", use_container_width=True):
+        save_error = None
+        save_url = None
         with st.spinner("Creating playlist on Spotify..."):
             try:
-                url = create_and_save_playlist(
-                    sp,
-                    tracks,
-                    name,
-                    description,
-                )
+                save_url = create_and_save_playlist(sp, tracks, name, description)
+            except ValueError as e:
+                save_error = str(e)
             except Exception as e:
-                st.error(f"Could not save playlist: {e}")
-                st.stop()
-        st.success("Playlist saved to your Spotify account!")
-        st.link_button("Open in Spotify", url, use_container_width=True)
+                save_error = f"Could not save playlist: {e}"
+
+        if save_error:
+            st.error(save_error)
+        else:
+            st.success("Playlist saved to your Spotify account!")
+            st.link_button("Open in Spotify", save_url, use_container_width=True)
