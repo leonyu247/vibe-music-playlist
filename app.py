@@ -43,19 +43,28 @@ vibe = st.text_area(
 )
 st.caption(f"{len(vibe)}/200 characters")
 
-if st.button("Generate Playlist", type="primary", disabled=not vibe.strip()):
-    # Clear previous results when generating a new playlist
+generating = st.session_state.get("generating", False)
+
+if st.button("Generate Playlist", type="primary", disabled=not vibe.strip() or generating):
+    st.session_state["generating"] = True
+    st.session_state["pending_vibe"] = vibe
     for key in ("tracks", "playlist_name", "playlist_description"):
         st.session_state.pop(key, None)
+    st.rerun()
+
+if st.session_state.get("generating"):
+    pending_vibe = st.session_state.get("pending_vibe", vibe)
 
     vibe_error = None
     with st.spinner("Curating your playlist with AI..."):
         try:
-            playlist_data = get_playlist_from_vibe(vibe)
+            playlist_data = get_playlist_from_vibe(pending_vibe)
         except (ValueError, TimeoutError) as e:
             vibe_error = str(e)
         except Exception as e:
             vibe_error = f"Could not interpret vibe: {e}"
+
+    st.session_state["generating"] = False
 
     if vibe_error:
         st.error(vibe_error)
