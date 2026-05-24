@@ -6,14 +6,17 @@ def search_tracks(sp: spotipy.Spotify, track_suggestions: list) -> list:
     for suggestion in track_suggestions:
         title = suggestion.get("title", "")
         artist = suggestion.get("artist", "")
-        result = sp.search(
-            q=f"track:{title} artist:{artist}",
-            type="track",
-            limit=1,
-        )
-        items = result["tracks"]["items"]
-        if items:
-            tracks.append(items[0])
+        try:
+            result = sp.search(
+                q=f"track:{title} artist:{artist}",
+                type="track",
+                limit=1,
+            )
+            items = result["tracks"]["items"]
+            if items:
+                tracks.append(items[0])
+        except Exception:
+            continue
     return tracks
 
 
@@ -25,7 +28,7 @@ def create_and_save_playlist(
 ) -> str:
     page = sp.current_user_playlists(limit=50)
     while page:
-        for playlist in page["items"]:
+        for playlist in page.get("items") or []:
             if playlist["name"].strip().lower() == name.strip().lower():
                 raise ValueError(f'You already have a playlist named "{name}". Rename it in Spotify or choose a different vibe.')
         page = sp.next(page) if page["next"] else None
@@ -36,4 +39,4 @@ def create_and_save_playlist(
     )
     track_uris = [t["uri"] for t in tracks]
     sp.playlist_add_items(playlist["id"], track_uris)
-    return playlist["external_urls"]["spotify"]
+    return playlist.get("external_urls", {}).get("spotify", "https://open.spotify.com")
