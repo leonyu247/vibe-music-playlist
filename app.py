@@ -48,25 +48,29 @@ if st.button("Generate Playlist", type="primary", disabled=not vibe.strip()):
     for key in ("tracks", "playlist_name", "playlist_description"):
         st.session_state.pop(key, None)
 
+    vibe_error = None
     with st.spinner("Curating your playlist with AI..."):
         try:
             playlist_data = get_playlist_from_vibe(vibe)
-        except ValueError as e:
-            st.error(str(e))
-            st.stop()
-        except TimeoutError as e:
-            st.error(str(e))
-            st.stop()
+        except (ValueError, TimeoutError) as e:
+            vibe_error = str(e)
         except Exception as e:
-            st.error(f"Could not interpret vibe: {e}")
-            st.stop()
+            vibe_error = f"Could not interpret vibe: {e}"
 
+    if vibe_error:
+        st.error(vibe_error)
+        st.stop()
+
+    spotify_error = None
     with st.spinner("Finding tracks on Spotify..."):
         try:
             tracks = search_tracks(sp, playlist_data.get("tracks", []))
         except Exception as e:
-            st.error(f"Spotify error: {e}")
-            st.stop()
+            spotify_error = f"Spotify error: {e}"
+
+    if spotify_error:
+        st.error(spotify_error)
+        st.stop()
 
     if not tracks:
         st.warning("No tracks found for this vibe. Try rephrasing it.")
